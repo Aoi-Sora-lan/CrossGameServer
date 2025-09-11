@@ -1,0 +1,76 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "CrossGameServer/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.4-beta1",
+          "Serilog": "4.3.1-dev-02385",
+          "Serilog.Sinks.Console": "6.0.1-dev-00953"
+        },
+        "runtime": {
+          "CrossGameServer.dll": {}
+        }
+      },
+      "Newtonsoft.Json/13.0.4-beta1": {
+        "runtime": {
+          "lib/net6.0/Newtonsoft.Json.dll": {
+            "assemblyVersion": "13.0.0.0",
+            "fileVersion": "13.0.4.30731"
+          }
+        }
+      },
+      "Serilog/4.3.1-dev-02385": {
+        "runtime": {
+          "lib/net8.0/Serilog.dll": {
+            "assemblyVersion": "4.3.0.0",
+            "fileVersion": "4.3.0.0"
+          }
+        }
+      },
+      "Serilog.Sinks.Console/6.0.1-dev-00953": {
+        "dependencies": {
+          "Serilog": "4.3.1-dev-02385"
+        },
+        "runtime": {
+          "lib/net8.0/Serilog.Sinks.Console.dll": {
+            "assemblyVersion": "6.0.1.0",
+            "fileVersion": "6.0.1.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "CrossGameServer/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Newtonsoft.Json/13.0.4-beta1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-6V0WDUzcU5p3R2/RN6UC+1wJtWfCB9YahSUe37mSGbPoH+Q84HTOjmsLIgynkZwJb/NYv0vFARSvDdUse3ZODA==",
+      "path": "newtonsoft.json/13.0.4-beta1",
+      "hashPath": "newtonsoft.json.13.0.4-beta1.nupkg.sha512"
+    },
+    "Serilog/4.3.1-dev-02385": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cWyHlO4mSpMv3c9/GZzUF1/pN6gu4xNgh6fQmyOXBPsCSyZmuLL8JjoNqZBpatb/SANtxAaVim8Y8hReiyZDRQ==",
+      "path": "serilog/4.3.1-dev-02385",
+      "hashPath": "serilog.4.3.1-dev-02385.nupkg.sha512"
+    },
+    "Serilog.Sinks.Console/6.0.1-dev-00953": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Goi2B0Je0X0NvWYUi0SiU9MJNF2957Kfjmc6VPZ2hNl6Lmj9he6laxmDuQU/c0fBdAFnNiEUPPcHd/NJVyfbkA==",
+      "path": "serilog.sinks.console/6.0.1-dev-00953",
+      "hashPath": "serilog.sinks.console.6.0.1-dev-00953.nupkg.sha512"
+    }
+  }
+}
