@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中继服务器监控系统</title>
+    <style>
+        /* 所有CSS样式保持不变 */
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--secondary), var(--dark));
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .server-status {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, var(--primary), #2980b9);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .channel-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .channel {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .channel-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .machine-list {
+            padding: 15px;
+        }
+
+        .machine {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--success);
+        }
+
+        .machine.offline {
+            border-left-color: var(--gray);
+        }
+
+        .machine-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .machine-address {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .message-row {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .message-row:hover {
+            background-color: #f0f7ff;
+        }
+
+        .message-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .type-none { background-color: #ecf0f1; color: #7f8c8d; }
+        .type-itemrequest { background-color: #d5f5e3; color: #27ae60; }
+        .type-itemresponse { background-color: #d6eaf8; color: #2980b9; }
+        .type-response { background-color: #d6eaf8; color: #2980b9; }
+        .type-transfer { background-color: #fdebd0; color: #d35400; }
+        .type-signal { background-color: #e8daef; color: #8e44ad; }
+        .type-setchannel { background-color: #d5dbdb; color: #34495e; }
+        .type-registermachine { background-color: #d5f5e3; color: #27ae60; }
+        .type-removemachine { background-color: #fadbd8; color: #c0392b; }
+        .type-changemachinename { background-color: #fcf3cf; color: #b7950b; }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .tab-container {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* 新增样式 */
+        .machine.hidden {
+            display: none;
+        }
+
+        .message-row.hidden {
+            display: none;
+        }
+
+        /* 新增方向筛选样式 */
+        .direction-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .direction-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .direction-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .direction-option {
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .direction-option.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .message-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-option {
+            padding: 6px 12px;
+            border-radius: 4px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .message-option.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .message-search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message-search-box {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .message-direction {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            min-width: 50px;
+            display: inline-block; /* 新增 */
+            background-color: #e8f4fc;
+            color: #2980b9;
+        }
+
+        .direction-incoming {
+            background-color: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .direction-outgoing {
+            background-color: #fdebd0;
+            color: #d35400;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-top">
+            <h1>中继服务器监控</h1>
+            <div class="server-status">
+                <div class="status-indicator"></div>
+                <span>运行中 - {{SERVER_TIME}}</span>
+            </div>
+        </div>
+        <p>监控机器状态</p>
+    </header>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-label">频道数</div>
+            <div class="stat-value">{{ACTIVE_CHANNELS_COUNT}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">机器数</div>
+            <div class="stat-value">{{CONNECTED_MACHINES_COUNT}}</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">消息数</div>
+            <div class="stat-value">{{TODAY_MESSAGES_COUNT}}</div>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="panel">
+            <div class="panel-header">
+                <span>频道与机器管理</span>
+            </div>
+            <div class="panel-content">
+                <input type="text" class="search-box" id="machine-search" placeholder="搜索机器名称或ID...">
+
+                <div class="channel-container">
+                    {{CHANNELS_DATA}}
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>消息历史记录</span>
+            </div>
+            <div class="panel-content">
+                <div class="direction-filter">
+                    <div class="direction-label">消息类型:</div>
+                    <div class="message-options">
+                        <div class="message-option active" data-type="all">所有消息</div>
+                        <div class="message-option" data-type="itemrequest,itemresponse,transfer">物品请求</div>
+                        <div class="message-option" data-type="setchannel,registermachine,removemachine,changemachinename">控制消息</div>
+                    </div>
+                </div>
+                <!-- 新增方向筛选 -->
+                <div class="direction-filter">
+                    <div class="direction-label">消息方向:</div>
+                    <div class="direction-options">
+                        <div class="direction-option active" data-direction="all">全部</div>
+                        <div class="direction-option" data-direction="incoming">接收的消息</div>
+                        <div class="direction-option" data-direction="outgoing">发送的消息</div>
+                    </div>
+                </div>
+
+                <!-- 新增消息搜索框 -->
+                <div class="message-search-container">
+                    <input type="text" class="message-search-box" id="message-content-search" placeholder="搜索消息内容...">
+                    <button class="btn-primary" id="search-messages">搜索</button>
+                </div>
+
+                <table id="messages-table">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">方向</th>
+                        <th>类型</th>
+                        <th>时间</th>
+                        <th>源地址</th>
+                        <th>目标地址</th>
+                        <th>频道</th>
+                        <th>内容</th>
+                    </tr>
+                    </thead>
+                    <tbody class="message-content">
+                    {{MESSAGES_DATA}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span>机器地址映射表</span>
+                <div>
+                    <button class="btn-primary">导出CSV</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>游戏类型</th>
+                        <th>游戏ID</th>
+                        <th>机器ID</th>
+                        <th>IP地址</th>
+                        <th>端口</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ADDRESS_MAPPING_DATA}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 搜索功能实现
+    document.getElementById('machine-search').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const machines = document.querySelectorAll('.machine');
+
+        machines.forEach(machine => {
+            const name = machine.querySelector('strong').textContent.toLowerCase();
+            const address = machine.querySelector('.machine-address').textContent.toLowerCase();
+
+            if (name.includes(searchTerm) || address.includes(searchTerm)) {
+                machine.classList.remove('hidden');
+            } else {
+                machine.classList.add('hidden');
+            }
+        });
+    });
+
+    // 消息类型分类切换功能
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // 更新标签状态
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            // 获取要显示的消息类型
+            const messageTypes = this.getAttribute('data-type').split(',');
+
+            // 过滤消息行
+            filterMessages();
+        });
+    });
+
+    // 方向筛选功能
+    const directionOptions = document.querySelectorAll('.direction-option');
+    const messageOptions = document.querySelectorAll('.message-option');
+    messageOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // 更新方向选项状态
+            messageOptions.forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+
+            // 过滤消息行
+            filterMessages();
+        });
+    });
+    directionOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // 更新方向选项状态
+            directionOptions.forEach(o => o.classList.remove('active'));
+            this.classList.add('active');
+
+            // 过滤消息行
+            filterMessages();
+        });
+    });
+
+    // 消息搜索功能
+    document.getElementById('search-messages').addEventListener('click', function() {
+        filterMessages();
+    });
+
+    // 按Enter键触发搜索
+    document.getElementById('message-content-search').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filterMessages();
+        }
+    });
+
+    // 统一的消息过滤函数
+    function filterMessages() {
+        // 获取当前选中的消息类型
+        const activeTab = document.querySelector('.message-option.active');
+        console.log(activeTab);
+        const messageTypes = activeTab.getAttribute('data-type').split(',');
+
+        // 获取当前选中的消息方向
+        const activeDirection = document.querySelector('.direction-option.active');
+        const messageDirection = activeDirection.getAttribute('data-direction');
+
+        // 获取搜索关键词
+        const searchTerm = document.getElementById('message-content-search').value.toLowerCase();
+
+        // 过滤消息行
+        const messageRows = document.querySelectorAll('#messages-table tbody .message-row');
+        messageRows.forEach(row => {
+            // 获取消息类型
+            const typeSpan = row.querySelector('.message-type');
+            const rowType = typeSpan.classList[1].replace('type-', '');
+
+            // 获取消息方向
+            const directionSpan = row.querySelector('.message-direction');
+            const rowDirection = directionSpan.classList[1].replace('direction-', '');
+
+            // 获取消息内容
+            const contentCell = row.querySelector('.message-content');
+            console.log(contentCell);
+            const rowContent = contentCell.textContent.toLowerCase();
+
+            // 检查类型是否匹配
+            const typeMatch = messageTypes.includes('all') || messageTypes.includes(rowType);
+
+            // 检查方向是否匹配
+            const directionMatch = messageDirection === 'all' || messageDirection === rowDirection;
+
+            // 检查内容是否匹配
+            const contentMatch = !searchTerm || rowContent.includes(searchTerm);
+
+            // 同时满足三个条件才显示
+            if (typeMatch && directionMatch && contentMatch) {
+                row.classList.remove('hidden');
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+    }
+    
+
+    // 消息行点击效果
+    document.querySelectorAll('.message-row').forEach(row => {
+        row.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+    });
+</script>
+</body>
+</html>

@@ -74,4 +74,9 @@ public partial class Channel(BaseUdpServer server)
         var index = GetMachineIndex(address);
         _machines.RemoveAt(index);
     }
+
+    public List<MachineEntity> GetMachines()
+    {
+        return _machines;
+    }
 }

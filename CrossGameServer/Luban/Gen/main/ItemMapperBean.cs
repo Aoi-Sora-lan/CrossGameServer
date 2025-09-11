@@ -15,16 +15,22 @@ using Newtonsoft.Json.Linq;
 namespace cfg.main
 {
 
-public sealed partial class ItemMapperBean : BeanBase
+public sealed partial class ItemMapperBean : Luban.BeanBase
 {
     public ItemMapperBean(JToken _buf) 
     {
         JObject _obj = _buf as JObject;
         UniId = (string)_obj.GetValue("uni_id");
-        MinecraftId = (string)_obj.GetValue("minecraft_id");
-        MinecraftCount = (int)_obj.GetValue("minecraft_count");
-        TerrariaId = (string)_obj.GetValue("terraria_id");
-        TerrariaCount = (int)_obj.GetValue("terraria_count");
+        {if (_obj.TryGetValue("minecraft_id", out var _j)) { MinecraftId = (string)_j; } else { MinecraftId = null; } }
+        {if (_obj.TryGetValue("minecraft_count", out var _j)) { MinecraftCount = (int)_j; } else { MinecraftCount = null; } }
+        {if (_obj.TryGetValue("terraria_id", out var _j)) { TerrariaId = (string)_j; } else { TerrariaId = null; } }
+        {if (_obj.TryGetValue("terraria_count", out var _j)) { TerrariaCount = (int)_j; } else { TerrariaCount = null; } }
+        {if (_obj.TryGetValue("stardew_id", out var _j)) { StardewId = (string)_j; } else { StardewId = null; } }
+        {if (_obj.TryGetValue("stardew_count", out var _j)) { StardewCount = (int)_j; } else { StardewCount = null; } }
+        {if (_obj.TryGetValue("starve_id", out var _j)) { StarveId = (string)_j; } else { StarveId = null; } }
+        {if (_obj.TryGetValue("starve_count", out var _j)) { StarveCount = (int)_j; } else { StarveCount = null; } }
+        {if (_obj.TryGetValue("factorio_id", out var _j)) { FactorioId = (string)_j; } else { FactorioId = null; } }
+        {if (_obj.TryGetValue("factorio_count", out var _j)) { FactorioCount = (int)_j; } else { FactorioCount = null; } }
     }
 
     public static ItemMapperBean DeserializeItemMapperBean(JToken _buf)
@@ -34,9 +40,15 @@ public sealed partial class ItemMapperBean : BeanBase
 
     public readonly string UniId;
     public readonly string MinecraftId;
-    public readonly int MinecraftCount;
+    public readonly int? MinecraftCount;
     public readonly string TerrariaId;
-    public readonly int TerrariaCount;
+    public readonly int? TerrariaCount;
+    public readonly string StardewId;
+    public readonly int? StardewCount;
+    public readonly string StarveId;
+    public readonly int? StarveCount;
+    public readonly string FactorioId;
+    public readonly int? FactorioCount;
 
 
     public const int __ID__ = 279883257;
@@ -54,6 +66,12 @@ public sealed partial class ItemMapperBean : BeanBase
         + "minecraftCount:" + MinecraftCount + ","
         + "terrariaId:" + TerrariaId + ","
         + "terrariaCount:" + TerrariaCount + ","
+        + "stardewId:" + StardewId + ","
+        + "stardewCount:" + StardewCount + ","
+        + "starveId:" + StarveId + ","
+        + "starveCount:" + StarveCount + ","
+        + "factorioId:" + FactorioId + ","
+        + "factorioCount:" + FactorioCount + ","
         + "}";
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using CrossGameServer.Requests;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -14,6 +15,7 @@ public class BaseUdpServer : IDisposable
     private readonly MessageHandler _messageHandler;
     private readonly Dictionary<MachineAddress, IPEndPoint> _machineMapper = new();
     private readonly SemaphoreSlim _messageSignal = new(0);
+    private List<MessageLog> _messageLogs = new();
     private bool _isRunning;
     public BaseUdpServer(int port, int channelCount)
     {
@@ -30,6 +32,7 @@ public class BaseUdpServer : IDisposable
     {
         var endPoint = _machineMapper[address.GetMachineAddress()];
         message.TargetAddress = address;
+        SaveLogMessage(message, true);
         Log.Debug("向{addr}发送:{msg}",endPoint, JsonConvert.SerializeObject(message));
         var bytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
         await _udpClient.SendAsync(bytes, endPoint);
@@ -42,29 +45,37 @@ public class BaseUdpServer : IDisposable
             if(!_receiveResults.TryDequeue(out var result)) continue;
             var receivedMessageBytes = Encoding.UTF8.GetString(result.Buffer);
             var receivedMessage = JsonConvert.DeserializeObject<Message>(receivedMessageBytes);
+            SaveLogMessage(receivedMessage, false);
             var address = receivedMessage.SourceAddress.GetMachineAddress();
             switch (receivedMessage.MessageType)
             {
                 case MessageType.RegisterMachine:
-                    HandleRegisterMachine(address, result.RemoteEndPoint);
+                    HandleRegisterMachine(receivedMessage, address, result.RemoteEndPoint);
                     continue;
                 case MessageType.RemoveMachine:
-                    HandleRemoveMachine(address);
+                    await HandleRemoveMachine(receivedMessage, address);
                     continue;
             }
             _messageHandler.OnConsumeMessage(receivedMessage);
         }
     }
 
-    private void HandleRemoveMachine(MachineAddress machineAddress)
+    private async Task HandleRemoveMachine(Message message, MachineAddress machineAddress)
     {
         _machineMapper.Remove(machineAddress);
         _messageHandler.RemoveMachine(machineAddress);
+       
     }
 
-    private void HandleRegisterMachine(MachineAddress machineAddress, IPEndPoint endPoint)
+    private async Task HandleRegisterMachine(Message message, MachineAddress machineAddress, IPEndPoint endPoint)
     {
         _machineMapper.TryAdd(machineAddress, endPoint);
+        await SendMessage(new Message()
+        {
+            SourceAddress = message.SourceAddress,
+            MessageType = MessageType.Response,
+            Content = Response.Success
+        }, message.SourceAddress);
     }
     private async Task ReceiveMessages()
     {
@@ -79,5 +90,25 @@ public class BaseUdpServer : IDisposable
     {
         _isRunning = false;
         _udpClient.Dispose();
+    }
+
+    public Dictionary<MachineAddress, IPEndPoint> GetMachineMapper()
+    {
+        return _machineMapper;
+    }
+
+    public void SaveLogMessage(Message message, bool isFromServer)
+    {
+        _messageLogs.Add(new MessageLog(message, isFromServer));
+    }
+    
+    public List<MessageLog> GetMessages()
+    {
+        return _messageLogs;
+    }
+
+    public List<List<MachineEntity>> GetChannels()
+    {
+        return _messageHandler.GetChannels();
     }
 }

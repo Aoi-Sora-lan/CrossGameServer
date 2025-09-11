@@ -14,8 +14,7 @@ public class ItemTransferHelper
     private static JArray? LoadJson(string file)
     {
         return JsonConvert.DeserializeObject(
-            System.IO.File.ReadAllText(
-                $"../../../../Data/{file}.json")) as JArray;
+            File.ReadAllText(Path.Combine("Resources","Data",$"{file}.json"))) as JArray;
     }
     public static ItemTransferHelper Instance
     {
@@ -53,14 +52,10 @@ public class ItemTransferHelper
     }
     public TransferResult Transfer(string itemId, int itemCount, string inputGameType, string outputGameType)
     {
-        Log.Debug("itemId:{item}",itemId);
         var uniId = GetUniId(inputGameType, itemId);
         var transferPackage = new ItemPackage();
         var uniCount = uniId == null? -1 : GetUniCount(inputGameType, uniId);
         var groupCount = itemCount / uniCount;
-        Log.Debug("groupCount:{group}",groupCount);
-        Log.Debug("uniCount:{group}",uniCount);
-        Log.Debug("uniId:{group}",uniId);
         if (uniId != null&&uniCount != -1)
         {
             var transferId = GetTypeId(outputGameType, uniId)!;
@@ -83,7 +78,6 @@ public class ItemTransferHelper
 
     private string? GetUniId(string gameType, string typeId)
     {
-        Log.Debug("uniId:{gameType},typeId{type}",gameType,typeId);
         var type = typeof(ItemMapperBean);
         var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
         var idField = fields.First(f => f.Name == $"{gameType}Id");

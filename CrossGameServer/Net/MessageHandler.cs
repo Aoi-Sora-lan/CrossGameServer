@@ -8,6 +8,7 @@ public class MessageHandler
     private BaseUdpServer _server;
     private Channel[] _channels;
     private Dictionary<MachineAddress, int> _machineChannelMapper = new();
+    private List<List<MachineEntity>> _machines = new();
 
     public MessageHandler(int channelCount, BaseUdpServer server)
     {
@@ -20,7 +21,6 @@ public class MessageHandler
     }
     public async void OnConsumeMessage(Message message)
     {
-        Log.Debug("{msg}",message);
         switch (message.MessageType)
         {
             case MessageType.SetChannel:
@@ -54,5 +54,15 @@ public class MessageHandler
     private async Task SendMessage(Message message, MessageAddress targetMessageAddress)
     { 
         await _server.SendMessage(message, targetMessageAddress);
+    }
+
+    public List<List<MachineEntity>> GetChannels()
+    {
+        _machines.Clear();
+        foreach (var channel in _channels)
+        {
+            _machines.Add(channel.GetMachines());
+        }
+        return _machines;
     }
 }

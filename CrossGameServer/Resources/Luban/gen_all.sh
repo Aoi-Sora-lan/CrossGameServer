@@ -1,7 +1,7 @@
 #!/bin/bash
 
 WORKSPACE=..
-SERVER_ROOT=../CrossGameServer/Luban/Gen
+SERVER_ROOT=../../Luban/Gen
 LUBAN_DLL=./Tools/Luban/Luban.dll
 CONF_ROOT=.
 
