@@ -1,9 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeGameClient", "FakeGameClient\FakeGameClient.csproj", "{198E54D3-650E-435C-85D6-E0C7FFEE2D33}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossGameLibrary", "CrossGameLibrary\CrossGameLibrary.csproj", "{798F9236-C7D1-41D9-B673-F048024D1E37}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossGameServer", "CrossGameServer\CrossGameServer.csproj", "{2F2F85A8-DC0D-40A1-986A-96961B9817C6}"
 EndProject
 Global
