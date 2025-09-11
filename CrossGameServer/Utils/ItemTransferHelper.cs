@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Serilog;
 
-namespace CrossGameServer;
+namespace CrossGameServer.Utils;
 
 public class ItemTransferHelper
 {
