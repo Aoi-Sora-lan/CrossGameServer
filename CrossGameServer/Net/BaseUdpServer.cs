@@ -10,15 +10,17 @@ namespace CrossGameServer.Net;
 
 public class BaseUdpServer : IDisposable
 {
+    private readonly int _maxMessageHistory;
     private readonly UdpClient _udpClient;
     private readonly ConcurrentQueue<UdpReceiveResult> _receiveResults = new();
     private readonly MessageHandler _messageHandler;
     private readonly Dictionary<MachineAddress, IPEndPoint> _machineMapper = new();
-    private readonly SemaphoreSlim _messageSignal = new(0);
+    private readonly SemaphoreSlim _messageSignal = new(1);
     private List<MessageLog> _messageLogs = new();
     private bool _isRunning;
-    public BaseUdpServer(int port, int channelCount)
+    public BaseUdpServer(int port, int channelCount, int maxMessageHistory)
     {
+        _maxMessageHistory = maxMessageHistory;
         _messageHandler = new MessageHandler(channelCount, this);
         _udpClient = new UdpClient(port);
     }
@@ -50,7 +52,7 @@ public class BaseUdpServer : IDisposable
             switch (receivedMessage.MessageType)
             {
                 case MessageType.RegisterMachine:
-                    HandleRegisterMachine(receivedMessage, address, result.RemoteEndPoint);
+                    await HandleRegisterMachine(receivedMessage, address, result.RemoteEndPoint);
                     continue;
                 case MessageType.RemoveMachine:
                     await HandleRemoveMachine(receivedMessage, address);
@@ -99,6 +101,7 @@ public class BaseUdpServer : IDisposable
 
     public void SaveLogMessage(Message message, bool isFromServer)
     {
+        if(_messageLogs.Count >= _maxMessageHistory) _messageLogs.RemoveAt(0);
         _messageLogs.Add(new MessageLog(message, isFromServer));
     }
     

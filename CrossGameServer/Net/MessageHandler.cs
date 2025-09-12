@@ -48,7 +48,8 @@ public class MessageHandler
 
     public void RemoveMachine(MachineAddress machineAddress)
     {
-        _channels[_machineChannelMapper[machineAddress]].Remove(machineAddress);
+        if (!_machineChannelMapper.TryGetValue(machineAddress, out var channel)) return;
+        _channels[channel].Remove(machineAddress);
         _machineChannelMapper.Remove(machineAddress);
     }
     private async Task SendMessage(Message message, MessageAddress targetMessageAddress)
