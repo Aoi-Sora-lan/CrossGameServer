@@ -1,5 +1,6 @@
-/CrossGameLibrary/
 /FakeGameClient/
+/CrossGameLibrary/obj/
+/CrossGameLibrary/bin/
 /CrossGameServer/obj/
 /CrossGameServer/bin/
 /.idea
