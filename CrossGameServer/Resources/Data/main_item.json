@@ -40,5 +40,145 @@
     "minecraft_count": 1,
     "terraria_id": "WaterBucket",
     "terraria_count": 1
+  },
+  {
+    "uni_id": "LavaBucket",
+    "minecraft_id": "minecraft:lava_bucket",
+    "minecraft_count": 1,
+    "terraria_id": "LavaBucket",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Dirt",
+    "minecraft_id": "minecraft:dirt",
+    "minecraft_count": 1,
+    "terraria_id": "Dirt",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Cobblestone",
+    "minecraft_id": "minecraft:cobblestone",
+    "minecraft_count": 1,
+    "terraria_id": "StoneBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Gravel",
+    "minecraft_id": "minecraft:gravel",
+    "minecraft_count": 1,
+    "terraria_id": "SlitBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Sand",
+    "minecraft_id": "minecraft:sand",
+    "minecraft_count": 1,
+    "terraria_id": "SandBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "BrickBlock",
+    "minecraft_id": "minecraft:brick_block",
+    "minecraft_count": 1,
+    "terraria_id": "RedBrick",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Glass",
+    "minecraft_id": "minecraft:glass",
+    "minecraft_count": 1,
+    "terraria_id": "Glass",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "SnowBlock",
+    "minecraft_id": "minecraft:snow_block",
+    "minecraft_count": 1,
+    "terraria_id": "\t\nSnowBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Ice",
+    "minecraft_id": "minecraft:ice",
+    "minecraft_count": 1,
+    "terraria_id": "IceBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Obsidian",
+    "minecraft_id": "minecraft:obsidian",
+    "minecraft_count": 1,
+    "terraria_id": "Obsidian",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Book",
+    "minecraft_id": "minecraft:book",
+    "minecraft_count": 1,
+    "terraria_id": "Book",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Bookshelf",
+    "minecraft_id": "minecraft:bookshelf",
+    "minecraft_count": 1,
+    "terraria_id": "Bookcase",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Torch",
+    "minecraft_id": "minecraft:torch",
+    "minecraft_count": 1,
+    "terraria_id": "Torch",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "SoulTorch",
+    "minecraft_id": "minecraft:soul_torch",
+    "minecraft_count": 1,
+    "terraria_id": "DemonTorch",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Clay",
+    "minecraft_id": "minecraft:clay",
+    "minecraft_count": 1,
+    "terraria_id": "ClayBlock",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Cactus",
+    "minecraft_id": "minecraft:cactus",
+    "minecraft_count": 1,
+    "terraria_id": "Cactus",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Pumpkin",
+    "minecraft_id": "minecraft:pumpkin",
+    "minecraft_count": 1,
+    "terraria_id": "Pumpkin",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Vine",
+    "minecraft_id": "minecraft:vine",
+    "minecraft_count": 1,
+    "terraria_id": "Vine",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Snowball",
+    "minecraft_id": "minecraft:snowball",
+    "minecraft_count": 1,
+    "terraria_id": "Snowball",
+    "terraria_count": 1
+  },
+  {
+    "uni_id": "Feather",
+    "minecraft_id": "minecraft:feather",
+    "minecraft_count": 1,
+    "terraria_id": "Feather",
+    "terraria_count": 1
   }
 ]
