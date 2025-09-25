@@ -133,7 +133,7 @@ public class MessageHandler
         var canTransfer = _logic.CanTransfer(content.ItemId, content.ItemCount);
         if (canTransfer)
         {
-            var maxNeed = _logic.GetMaxNeedCount();
+            var maxNeed = _logic.GetMaxNeedCount(content.ItemId, content.ItemCount);
             var count = Math.Min(maxNeed, content.ItemCount);
             await SendMessage(_messageBuilder
                 .Copy(itemRequest)
